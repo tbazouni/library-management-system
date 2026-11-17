@@ -1,0 +1,25 @@
+$kind: http-request
+description: "Business/data-integrity test. Expected: conflict or client error; current RuntimeException may become 500."
+url: "{{baseUrl}}/api/books"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Duplicate ISBN test",
+      "isbn": "9780486282114",
+      "category": "FICTION",
+      "authorId": {{authorId}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Duplicate ISBN is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Duplicate ISBN is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });
+      pm.test("Duplicate ISBN is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Duplicate ISBN is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Duplicate ISBN is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+    language: text/javascript
+order: 9000

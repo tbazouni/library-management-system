@@ -1,0 +1,27 @@
+$kind: http-request
+description: "Run after creating book and borrower. Saves borrowingId. Expected: 201, status BORROWED, returnDate null; book availability becomes false."
+url: "{{baseUrl}}/api/borrowings/books/{{bookId}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "borrowerId": {{borrowerId}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("borrowingId", d.id); }
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("borrowingId", d.id); }
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("borrowingId", d.id); }
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("borrowingId", d.id); }
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("borrowingId", d.id); }
+    language: text/javascript
+order: 1000

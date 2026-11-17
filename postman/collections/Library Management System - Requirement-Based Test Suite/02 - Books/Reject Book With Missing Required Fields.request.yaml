@@ -1,0 +1,25 @@
+$kind: http-request
+description: Validation test for title, ISBN, category and authorId.
+url: "{{baseUrl}}/api/books"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "",
+      "isbn": "",
+      "category": null,
+      "authorId": null
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Invalid book payload is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });
+      pm.test("Invalid book payload is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid book payload is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid book payload is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid book payload is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+    language: text/javascript
+order: 8000

@@ -1,0 +1,11 @@
+$kind: http-request
+description: "Optional diagnostic: expected 409 because the main book still references this author if prior delete failed."
+url: "{{baseUrl}}/api/authors/{{authorId}}"
+method: DELETE
+headers:
+  Content-Type: application/json
+scripts:
+  - type: afterResponse
+    code: pm.test("Deletion is blocked while referenced", function () { pm.expect(pm.response.code).to.be.oneOf([204, 409]); });
+    language: text/javascript
+order: 8000

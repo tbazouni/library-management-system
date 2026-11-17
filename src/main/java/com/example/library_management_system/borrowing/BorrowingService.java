@@ -1,0 +1,179 @@
+
+package com.example.library_management_system.borrowing;
+
+import com.example.library_management_system.book.Book;
+import com.example.library_management_system.book.BookRepository;
+import com.example.library_management_system.borrower.Borrower;
+import com.example.library_management_system.borrower.BorrowerRepository;
+import com.example.library_management_system.borrowing.dto.BorrowingRequestDto;
+import com.example.library_management_system.borrowing.dto.BorrowingResponseDto;
+import com.example.library_management_system.exception.BusinessException;
+import com.example.library_management_system.exception.ResourceNotFoundException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class BorrowingService {
+
+    private final BorrowingRepository borrowingRepository;
+    private final BookRepository bookRepository;
+    private final BorrowerRepository borrowerRepository;
+
+    @Transactional(readOnly = true)
+    public List<BorrowingResponseDto> getAllBorrowings() {
+
+        return borrowingRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public BorrowingResponseDto getBorrowingById(Long id) {
+
+        BorrowingTransaction transaction =
+                borrowingRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Borrowing transaction not found with ID: "
+                                                + id
+                                )
+                        );
+
+        return mapToResponse(transaction);
+    }
+
+    public BorrowingResponseDto borrowBook(
+            Long bookId,
+            BorrowingRequestDto request) {
+
+        // 1. Find the requested book
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Book not found with ID: " + bookId
+                        )
+                );
+
+        // 2. Check whether the book is available
+        if (!book.isAvailable()) {
+            throw new BusinessException(
+                    "This book is not available for borrowing"
+            );
+        }
+
+        // 3. Find the borrower
+        Borrower borrower = borrowerRepository
+                .findById(request.getBorrowerId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Borrower not found with ID: "
+                                        + request.getBorrowerId()
+                        )
+                );
+
+        // 4. Create the borrowing transaction
+        BorrowingTransaction transaction =
+                new BorrowingTransaction();
+
+        transaction.setBook(book);
+        transaction.setBorrower(borrower);
+        transaction.setBorrowDate(LocalDate.now());
+        transaction.setReturnDate(null);
+        transaction.setStatus(BorrowingStatus.BORROWED);
+
+        // 5. Update book availability
+        book.setAvailable(false);
+
+        bookRepository.save(book);
+
+        // 6. Save the borrowing transaction
+        BorrowingTransaction savedTransaction =
+                borrowingRepository.save(transaction);
+
+        log.info(
+                "Book ID {} borrowed by borrower ID {}",
+                bookId,
+                borrower.getId()
+        );
+
+        return mapToResponse(savedTransaction);
+    }
+
+    public BorrowingResponseDto returnBook(Long transactionId) {
+
+        // 1. Find the borrowing transaction
+        BorrowingTransaction transaction =
+                borrowingRepository.findById(transactionId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Borrowing transaction not found with ID: "
+                                                + transactionId
+                                )
+                        );
+
+        // 2. Check whether the book was already returned
+        if (transaction.getStatus() == BorrowingStatus.RETURNED) {
+
+            throw new BusinessException(
+                    "This book has already been returned"
+            );
+        }
+
+        // 3. Update transaction status and return date
+        transaction.setStatus(BorrowingStatus.RETURNED);
+        transaction.setReturnDate(LocalDate.now());
+
+        // 4. Make the book available again
+        Book book = transaction.getBook();
+
+        book.setAvailable(true);
+
+        bookRepository.save(book);
+
+        // 5. Save the updated transaction
+        BorrowingTransaction updatedTransaction =
+                borrowingRepository.save(transaction);
+
+        log.info(
+                "Borrowing transaction ID {} returned successfully",
+                transactionId
+        );
+
+        return mapToResponse(updatedTransaction);
+    }
+
+    private BorrowingResponseDto mapToResponse(
+            BorrowingTransaction transaction) {
+
+        BorrowingResponseDto response =
+                new BorrowingResponseDto();
+
+        response.setId(transaction.getId());
+
+        response.setBookId(transaction.getBook().getId());
+        response.setBookTitle(transaction.getBook().getTitle());
+
+        response.setBorrowerId(transaction.getBorrower().getId());
+        response.setBorrowerName(
+                transaction.getBorrower().getName()
+        );
+
+        response.setBorrowDate(transaction.getBorrowDate());
+        response.setReturnDate(transaction.getReturnDate());
+
+        response.setStatus(transaction.getStatus());
+
+        return response;
+    }
+}

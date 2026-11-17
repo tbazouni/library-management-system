@@ -1,0 +1,24 @@
+$kind: http-request
+description: Update borrower fields.
+url: "{{baseUrl}}/api/borrowers/{{borrowerId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Alex Morgan Updated",
+      "email": "alex.morgan.library@example.com",
+      "phoneNumber": "+96170123457"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+    language: text/javascript
+order: 4000

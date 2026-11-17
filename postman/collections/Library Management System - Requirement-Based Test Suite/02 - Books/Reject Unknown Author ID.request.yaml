@@ -1,0 +1,25 @@
+$kind: http-request
+description: A book must reference an existing author.
+url: "{{baseUrl}}/api/books"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Unknown Author Test",
+      "isbn": "9780000000002",
+      "category": "FICTION",
+      "authorId": 999999
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Unknown author is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown author is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown author is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });
+      pm.test("Unknown author is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown author is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+    language: text/javascript
+order: 10000

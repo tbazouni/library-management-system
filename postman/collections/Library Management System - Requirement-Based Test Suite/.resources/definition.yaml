@@ -1,0 +1,11 @@
+$kind: collection
+description: Tests only endpoints and behavior present in the submitted source code, aligned to the supplied challenge requirements. Run folders 01 to 04 in order. Folder 05 is cleanup and may report foreign-key conflicts because the API does not provide transaction deletion. The collection deliberately uses the actual controller routes, not assumed routes.
+variables:
+  baseUrl: http://localhost:8080
+  authorId: ""
+  bookId: ""
+  borrowerId: ""
+  borrowingId: ""
+  cleanupAuthorId: ""
+  cleanupBookId: ""
+  cleanupBorrowerId: ""

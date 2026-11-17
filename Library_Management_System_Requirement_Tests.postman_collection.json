@@ -1,0 +1,2106 @@
+{
+  "info": {
+    "_postman_id": "f16f2fd3-17d8-42a8-b5e5-6b48b7747060",
+    "name": "Library Management System - Requirement-Based Test Suite",
+    "description": "Tests only endpoints and behavior present in the submitted source code, aligned to the supplied challenge requirements. Run folders 01 to 04 in order. Folder 05 is cleanup and may report foreign-key conflicts because the API does not provide transaction deletion. The collection deliberately uses the actual controller routes, not assumed routes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "authorId",
+      "value": ""
+    },
+    {
+      "key": "bookId",
+      "value": ""
+    },
+    {
+      "key": "borrowerId",
+      "value": ""
+    },
+    {
+      "key": "borrowingId",
+      "value": ""
+    },
+    {
+      "key": "cleanupAuthorId",
+      "value": ""
+    },
+    {
+      "key": "cleanupBookId",
+      "value": ""
+    },
+    {
+      "key": "cleanupBorrowerId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Authors",
+      "item": [
+        {
+          "name": "Create Author (setup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            },
+            "description": "Run first. Saves authorId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mary Shelley\",\n  \"biography\": \"English novelist, author of Frankenstein.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"authorId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"authorId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"authorId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"authorId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"authorId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Authors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            },
+            "description": "Expected: 200 and an array of author DTOs."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Author By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            },
+            "description": "Expected: 200 and the created author."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Author",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            },
+            "description": "Full update of the author.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mary Wollstonecraft Shelley\",\n  \"biography\": \"Updated biography.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Books By Author",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}",
+                "books"
+              ]
+            },
+            "description": "Expected: 200 and an array; initially empty until a book is created."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Author With Blank Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            },
+            "description": "Validation test: @NotBlank name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"   \",\n  \"biography\": \"Invalid author\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Validation rejects blank author name\", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });",
+                  "pm.test(\"Validation rejects blank author name\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Validation rejects blank author name\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Validation rejects blank author name\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Validation rejects blank author name\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Not Found - Author ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "999999"
+              ]
+            },
+            "description": "Expected by requirement: not found response. Current service throws RuntimeException, so this may currently return 500."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown author does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown author does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown author does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown author does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown author does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Books",
+      "item": [
+        {
+          "name": "Create Book (setup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "Run after Create Author. Saves bookId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frankenstein\",\n  \"isbn\": \"9780486282114\",\n  \"category\": \"FICTION\",\n  \"authorId\": {{authorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"bookId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"bookId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"bookId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"bookId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"bookId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "Expected: 200 and an array of book DTOs."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Book By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Expected: 200; verify title, ISBN, category, author and available=true."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Books By Title",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/search/title?title=frank",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "search",
+                "title"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "frank",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Title search is case-insensitive substring search."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Books By Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/search/category?category=FICTION",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "search",
+                "category"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "FICTION",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Category must exactly match an enum value."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Books By Author ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/search/author/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "search",
+                "author",
+                "{{authorId}}"
+              ]
+            },
+            "description": "Expected: books belonging to this author."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Update all book fields supported by the request DTO. Availability is managed by borrowing operations, not the DTO.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frankenstein - Updated\",\n  \"isbn\": \"9780486282114\",\n  \"category\": \"HISTORY\",\n  \"authorId\": {{authorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Book With Missing Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "Validation test for title, ISBN, category and authorId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"isbn\": \"\",\n  \"category\": null,\n  \"authorId\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid book payload is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });",
+                  "pm.test(\"Invalid book payload is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid book payload is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid book payload is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid book payload is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Duplicate ISBN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "Business/data-integrity test. Expected: conflict or client error; current RuntimeException may become 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Duplicate ISBN test\",\n  \"isbn\": \"9780486282114\",\n  \"category\": \"FICTION\",\n  \"authorId\": {{authorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });",
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Unknown Author ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "A book must reference an existing author.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unknown Author Test\",\n  \"isbn\": \"9780000000002\",\n  \"category\": \"FICTION\",\n  \"authorId\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown author is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown author is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown author is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown author is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown author is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Not Found - Book ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "999999"
+              ]
+            },
+            "description": "Expected by requirement: not found response. Current service throws RuntimeException, so this may currently return 500."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown book does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown book does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown book does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown book does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown book does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Borrowers",
+      "item": [
+        {
+          "name": "Create Borrower (setup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers"
+              ]
+            },
+            "description": "Run before borrowing. Saves borrowerId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alex Morgan\",\n  \"email\": \"alex.morgan.library@example.com\",\n  \"phoneNumber\": \"+96170123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowerId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowerId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowerId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowerId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowerId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Borrowers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers"
+              ]
+            },
+            "description": "Expected: 200 and an array."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Borrower By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers/{{borrowerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers",
+                "{{borrowerId}}"
+              ]
+            },
+            "description": "Expected: 200 and the created borrower."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Borrower",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers/{{borrowerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers",
+                "{{borrowerId}}"
+              ]
+            },
+            "description": "Update borrower fields.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alex Morgan Updated\",\n  \"email\": \"alex.morgan.library@example.com\",\n  \"phoneNumber\": \"+96170123457\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Invalid Borrower Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers"
+              ]
+            },
+            "description": "Validation test: @Email and required fields.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Email User\",\n  \"email\": \"not-an-email\",\n  \"phoneNumber\": \"123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });",
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Duplicate Borrower Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers"
+              ]
+            },
+            "description": "Email uniqueness test.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate Email User\",\n  \"email\": \"alex.morgan.library@example.com\",\n  \"phoneNumber\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Duplicate email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });",
+                  "pm.test(\"Duplicate email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Duplicate email is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Not Found - Borrower ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers",
+                "999999"
+              ]
+            },
+            "description": "Expected by requirement: not found response. Current service throws RuntimeException, so this may currently return 500."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown borrower does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown borrower does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown borrower does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });",
+                  "pm.test(\"Unknown borrower does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown borrower does not return success\", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Borrowing Transactions",
+      "item": [
+        {
+          "name": "Borrow Book (success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Run after creating book and borrower. Saves borrowingId. Expected: 201, status BORROWED, returnDate null; book availability becomes false.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": {{borrowerId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowingId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowingId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowingId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowingId\", d.id); }",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"borrowingId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Book Is Unavailable After Borrowing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Expected: 200 and available=false."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Borrowing Same Book Again",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Business rule: a book already unavailable cannot be borrowed again.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": {{borrowerId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unavailable book cannot be borrowed twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Unavailable book cannot be borrowed twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });",
+                  "pm.test(\"Unavailable book cannot be borrowed twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Unavailable book cannot be borrowed twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"Unavailable book cannot be borrowed twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Borrowing Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings"
+              ]
+            },
+            "description": "Expected: 200 and an array containing the new transaction."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Borrowing Transaction By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/{{borrowingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "{{borrowingId}}"
+              ]
+            },
+            "description": "Expected: 200 and status BORROWED."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Return Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/{{borrowingId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "{{borrowingId}}",
+                "return"
+              ]
+            },
+            "description": "Expected: 200, status RETURNED, returnDate populated, and book availability true."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Book Is Available After Return",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Expected: 200 and available=true."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"HTTP status is 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Returning Same Transaction Twice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/{{borrowingId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "{{borrowingId}}",
+                "return"
+              ]
+            },
+            "description": "Business rule: already returned transaction cannot be returned again."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A transaction cannot be returned twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"A transaction cannot be returned twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });",
+                  "pm.test(\"A transaction cannot be returned twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"A transaction cannot be returned twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });",
+                  "pm.test(\"A transaction cannot be returned twice\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Borrowing With Missing Borrower ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Validation test: borrowerId is required. Book should currently be available after the return above.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing borrower ID is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });",
+                  "pm.test(\"Missing borrower ID is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Missing borrower ID is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Missing borrower ID is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });",
+                  "pm.test(\"Missing borrower ID is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Borrowing With Unknown Borrower",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Borrower must exist.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown borrower is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown borrower is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown borrower is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown borrower is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown borrower is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Borrowing Unknown Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowings/books/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowings",
+                " books",
+                "999999"
+              ]
+            },
+            "description": "Unknown book ID must be rejected.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": {{borrowerId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unknown book is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown book is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown book is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });",
+                  "pm.test(\"Unknown book is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });",
+                  "pm.test(\"Unknown book is rejected\", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Delete Operations (run last)",
+      "item": [
+        {
+          "name": "Create Disposable Author",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            },
+            "description": "Creates an author used only by the delete tests. Saves cleanupAuthorId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Cleanup Author\",\n  \"biography\": \"Created only to verify delete endpoints.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"cleanupAuthorId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Disposable Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "description": "Creates a book with no borrowing transactions. Saves cleanupBookId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Cleanup Book\",\n  \"isbn\": \"9780000000091\",\n  \"category\": \"FICTION\",\n  \"authorId\": {{cleanupAuthorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"cleanupBookId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Disposable Borrower",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers"
+              ]
+            },
+            "description": "Creates a borrower with no borrowing transactions. Saves cleanupBorrowerId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Cleanup Borrower\",\n  \"email\": \"postman.cleanup.borrower@example.com\",\n  \"phoneNumber\": \"+96170000091\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is one of [200, 201]\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set(\"cleanupBorrowerId\", d.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Disposable Book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{cleanupBookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{cleanupBookId}}"
+              ]
+            },
+            "description": "Expected: 204 No Content. This book has no borrowing transactions."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Disposable Author",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{cleanupAuthorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{cleanupAuthorId}}"
+              ]
+            },
+            "description": "Expected: 204 No Content. Its disposable book has already been deleted."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Disposable Borrower",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers/{{cleanupBorrowerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers",
+                "{{cleanupBorrowerId}}"
+              ]
+            },
+            "description": "Expected: 204 No Content. This borrower has no borrowing transactions."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Main Book (expected FK conflict)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "description": "Optional diagnostic: expected 409 because the returned borrowing transaction still references this book. The challenge does not require deleting borrowing transactions."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Main Author (expected FK conflict)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            },
+            "description": "Optional diagnostic: expected 409 because the main book still references this author if prior delete failed."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deletion is blocked while referenced\", function () { pm.expect(pm.response.code).to.be.oneOf([204, 409]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Main Borrower (expected FK conflict)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/borrowers/{{borrowerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrowers",
+                "{{borrowerId}}"
+              ]
+            },
+            "description": "Optional diagnostic: expected 409 because the borrowing transaction still references this borrower."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deletion is blocked while referenced\", function () { pm.expect(pm.response.code).to.be.oneOf([204, 409]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

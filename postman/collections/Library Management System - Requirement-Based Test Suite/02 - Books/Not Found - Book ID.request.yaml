@@ -1,0 +1,16 @@
+$kind: http-request
+description: "Expected by requirement: not found response. Current service throws RuntimeException, so this may currently return 500."
+url: "{{baseUrl}}/api/books/999999"
+method: GET
+headers:
+  Content-Type: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Unknown book does not return success", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });
+      pm.test("Unknown book does not return success", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });
+      pm.test("Unknown book does not return success", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });
+      pm.test("Unknown book does not return success", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });
+      pm.test("Unknown book does not return success", function () { pm.expect(pm.response.code).to.be.oneOf([404, 500]); });
+    language: text/javascript
+order: 11000

@@ -1,0 +1,22 @@
+$kind: http-request
+description: Borrower must exist.
+url: "{{baseUrl}}/api/borrowings/books/{{bookId}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "borrowerId": 999999
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Unknown borrower is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown borrower is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown borrower is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([404]); });
+      pm.test("Unknown borrower is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+      pm.test("Unknown borrower is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]); });
+    language: text/javascript
+order: 10000

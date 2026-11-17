@@ -1,0 +1,18 @@
+$kind: http-request
+description: Category must exactly match an enum value.
+url: "{{baseUrl}}/api/books/search/category?category=FICTION"
+method: GET
+headers:
+  Content-Type: application/json
+queryParams:
+  category: FICTION
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+    language: text/javascript
+order: 5000

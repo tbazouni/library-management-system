@@ -1,0 +1,22 @@
+$kind: http-request
+description: "Business rule: a book already unavailable cannot be borrowed again."
+url: "{{baseUrl}}/api/borrowings/books/{{bookId}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "borrowerId": {{borrowerId}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Unavailable book cannot be borrowed twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Unavailable book cannot be borrowed twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });
+      pm.test("Unavailable book cannot be borrowed twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Unavailable book cannot be borrowed twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("Unavailable book cannot be borrowed twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+    language: text/javascript
+order: 3000

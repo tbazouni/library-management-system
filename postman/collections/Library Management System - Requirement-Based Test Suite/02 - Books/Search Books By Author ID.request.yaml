@@ -1,0 +1,16 @@
+$kind: http-request
+description: "Expected: books belonging to this author."
+url: "{{baseUrl}}/api/books/search/author/{{authorId}}"
+method: GET
+headers:
+  Content-Type: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+      pm.test("HTTP status is 200", function () { pm.response.to.have.status(200); });
+    language: text/javascript
+order: 6000

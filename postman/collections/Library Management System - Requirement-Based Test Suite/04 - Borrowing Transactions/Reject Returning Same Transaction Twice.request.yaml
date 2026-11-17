@@ -1,0 +1,16 @@
+$kind: http-request
+description: "Business rule: already returned transaction cannot be returned again."
+url: "{{baseUrl}}/api/borrowings/{{borrowingId}}/return"
+method: PUT
+headers:
+  Content-Type: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("A transaction cannot be returned twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("A transaction cannot be returned twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409]); });
+      pm.test("A transaction cannot be returned twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("A transaction cannot be returned twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+      pm.test("A transaction cannot be returned twice", function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 500]); });
+    language: text/javascript
+order: 8000

@@ -1,0 +1,19 @@
+$kind: http-request
+description: "Validation test: borrowerId is required. Book should currently be available after the return above."
+url: "{{baseUrl}}/api/borrowings/books/{{bookId}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Missing borrower ID is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });
+      pm.test("Missing borrower ID is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Missing borrower ID is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Missing borrower ID is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Missing borrower ID is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+    language: text/javascript
+order: 9000

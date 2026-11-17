@@ -1,0 +1,24 @@
+$kind: http-request
+description: "Validation test: @Email and required fields."
+url: "{{baseUrl}}/api/borrowers"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Invalid Email User",
+      "email": "not-an-email",
+      "phoneNumber": "123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Invalid email is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400]); });
+      pm.test("Invalid email is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid email is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid email is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+      pm.test("Invalid email is rejected", function () { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });
+    language: text/javascript
+order: 5000

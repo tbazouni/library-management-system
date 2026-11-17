@@ -1,0 +1,21 @@
+$kind: http-request
+description: Creates a borrower with no borrowing transactions. Saves cleanupBorrowerId.
+url: "{{baseUrl}}/api/borrowers"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Postman Cleanup Borrower",
+      "email": "postman.cleanup.borrower@example.com",
+      "phoneNumber": "+96170000091"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP status is one of [200, 201]", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });
+      if (pm.response.code === 200 || pm.response.code === 201) { const d = pm.response.json(); if (d.id !== undefined) pm.collectionVariables.set("cleanupBorrowerId", d.id); }
+    language: text/javascript
+order: 3000
