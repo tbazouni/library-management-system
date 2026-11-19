@@ -3,10 +3,12 @@ package com.example.library_management_system.book;
 
 import com.example.library_management_system.author.Author;
 import com.example.library_management_system.author.AuthorRepository;
+import com.example.library_management_system.book.dto.BookCreateRequestDto;
 import com.example.library_management_system.book.dto.BookRequestDto;
 import com.example.library_management_system.book.dto.BookResponseDto;
 import com.example.library_management_system.exception.BusinessException;
 import com.example.library_management_system.exception.ResourceNotFoundException;
+import com.example.library_management_system.integration.openlibrary.OpenLibraryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,23 +26,40 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private final OpenLibraryService openLibraryService;
 
-    public BookResponseDto createBook(BookRequestDto request) {
+    public BookResponseDto createBook(BookCreateRequestDto request) {
 
+        // 1. Check whether the ISBN already exists
         if (bookRepository.existsByIsbn(request.getIsbn())) {
             throw new BusinessException(
                     "A book with this ISBN already exists"
             );
         }
 
-        Author author = authorRepository.findById(request.getAuthorId())
+        // 2. Fetch the author's name from Open Library
+        String authorName = openLibraryService
+                .findAuthorNameByIsbn(request.getIsbn())
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Author not found with ID: "
-                                        + request.getAuthorId()
+                        new BusinessException(
+                                "Could not find author information for this ISBN in Open Library"
                         )
                 );
 
+        // 3. Check whether the author already exists
+        // If not, create a new author
+        Author author = authorRepository
+                .findByNameIgnoreCase(authorName)
+                .orElseGet(() -> {
+
+                    Author newAuthor = new Author();
+
+                    newAuthor.setName(authorName);
+
+                    return authorRepository.save(newAuthor);
+                });
+
+        // 4. Create the book
         Book book = new Book();
 
         book.setTitle(request.getTitle());
@@ -49,11 +68,13 @@ public class BookService {
         book.setAuthor(author);
         book.setAvailable(true);
 
+        // 5. Save the book
         Book savedBook = bookRepository.save(book);
 
         log.info(
-                "Book created successfully with ID: {}",
-                savedBook.getId()
+                "Book created successfully with ID: {} and author: {}",
+                savedBook.getId(),
+                authorName
         );
 
         return mapToResponse(savedBook);

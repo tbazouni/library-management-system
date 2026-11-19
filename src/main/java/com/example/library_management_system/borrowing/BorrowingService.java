@@ -13,6 +13,7 @@ import com.example.library_management_system.exception.ResourceNotFoundException
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,12 @@ public class BorrowingService {
     private final BookRepository bookRepository;
     private final BorrowerRepository borrowerRepository;
 
+    // Maximum number of active borrowing transactions
+    // The value is read from application.properties
+    @Value("${borrower.transaction.limit}")
+    private int transactionLimit;
+
+    // Get all borrowing transactions
     @Transactional(readOnly = true)
     public List<BorrowingResponseDto> getAllBorrowings() {
 
@@ -38,6 +45,7 @@ public class BorrowingService {
                 .toList();
     }
 
+    // Get a borrowing transaction by ID
     @Transactional(readOnly = true)
     public BorrowingResponseDto getBorrowingById(Long id) {
 
@@ -53,6 +61,7 @@ public class BorrowingService {
         return mapToResponse(transaction);
     }
 
+    // Borrow a book
     public BorrowingResponseDto borrowBook(
             Long bookId,
             BorrowingRequestDto request) {
@@ -82,7 +91,23 @@ public class BorrowingService {
                         )
                 );
 
-        // 4. Create the borrowing transaction
+        // 4. Count the borrower's active borrowing transactions
+        long currentTransactions =
+                borrowingRepository.countByBorrowerIdAndStatus(
+                        borrower.getId(),
+                        BorrowingStatus.BORROWED
+                );
+
+        // 5. Check whether the borrower reached the maximum limit
+        if (currentTransactions >= transactionLimit) {
+
+            throw new BusinessException(
+                    "Borrower has reached the maximum borrowing limit of "
+                            + transactionLimit + " books"
+            );
+        }
+
+        // 6. Create a new borrowing transaction
         BorrowingTransaction transaction =
                 new BorrowingTransaction();
 
@@ -92,17 +117,17 @@ public class BorrowingService {
         transaction.setReturnDate(null);
         transaction.setStatus(BorrowingStatus.BORROWED);
 
-        // 5. Update book availability
+        // 7. Mark the book as unavailable
         book.setAvailable(false);
 
         bookRepository.save(book);
 
-        // 6. Save the borrowing transaction
+        // 8. Save the borrowing transaction
         BorrowingTransaction savedTransaction =
                 borrowingRepository.save(transaction);
 
         log.info(
-                "Book ID {} borrowed by borrower ID {}",
+                "Book ID {} borrowed successfully by borrower ID {}",
                 bookId,
                 borrower.getId()
         );
@@ -110,6 +135,7 @@ public class BorrowingService {
         return mapToResponse(savedTransaction);
     }
 
+    // Return a borrowed book
     public BorrowingResponseDto returnBook(Long transactionId) {
 
         // 1. Find the borrowing transaction
@@ -130,7 +156,7 @@ public class BorrowingService {
             );
         }
 
-        // 3. Update transaction status and return date
+        // 3. Update the borrowing transaction
         transaction.setStatus(BorrowingStatus.RETURNED);
         transaction.setReturnDate(LocalDate.now());
 
@@ -153,6 +179,7 @@ public class BorrowingService {
         return mapToResponse(updatedTransaction);
     }
 
+    // Convert BorrowingTransaction entity into BorrowingResponseDto
     private BorrowingResponseDto mapToResponse(
             BorrowingTransaction transaction) {
 

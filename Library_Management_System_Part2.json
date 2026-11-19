@@ -1,0 +1,1568 @@
+{
+  "info": {
+    "_postman_id": "b6e55b5d-43a7-4f8a-9f62-5a8a02b6d6b1",
+    "name": "Library Management System - Complete Assignment Tests",
+    "description": "Comprehensive Postman collection for the Library Management System challenge: CRUD for books/authors/borrowers, searches, DTO validation, Open Library ISBN author lookup, borrowing/returning, and the configured maximum of five active loans per borrower. Run requests in order. Base URL defaults to http://localhost:8080.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "authorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "borrowerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId3",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId4",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId5",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookId6",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId3",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId4",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId5",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transactionId6",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookIds",
+      "value": "[]",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Authors CRUD and author-book relationship",
+      "item": [
+        {
+          "name": "01 - Create author",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"George Orwell\",\n  \"biography\": \"English novelist and essayist.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Author response contains ID and name\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "    pm.expect(d.name).to.eql(\"George Orwell\");",
+                  "});",
+                  "pm.collectionVariables.set(\"authorId\", d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Get all authors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Get author by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors/{{authorId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Correct author returned\", function () { pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"authorId\"))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Update author",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors/{{authorId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"George Orwell\",\n  \"biography\": \"Updated biography for Postman CRUD testing.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Author biography was updated\", function () { pm.expect(pm.response.json().biography).to.include(\"Updated\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Borrowers CRUD and validation",
+      "item": [
+        {
+          "name": "06 - Create borrower",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Borrower\",\n  \"email\": \"tatiana.postman@example.com\",\n  \"phoneNumber\": \"+96170123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Borrower response contains ID and email\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "    pm.expect(d.email).to.eql(\"tatiana.postman@example.com\");",
+                  "});",
+                  "pm.collectionVariables.set(\"borrowerId\", d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Get all borrowers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 - Get borrower by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers/{{borrowerId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 - Update borrower",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers/{{borrowerId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Borrower Updated\",\n  \"email\": \"tatiana.postman.updated@example.com\",\n  \"phoneNumber\": \"+96170123457\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Borrower was updated\", function () { pm.expect(pm.response.json().name).to.include(\"Updated\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 - Validation - reject invalid borrower email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Email User\",\n  \"email\": \"not-an-email\",\n  \"phoneNumber\": \"+96170111111\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid email is rejected\", function () { pm.expect([400, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 - Validation - reject missing borrower fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"phoneNumber\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing required borrower fields are rejected\", function () { pm.expect([400, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Books CRUD, search, ISBN integration and validation",
+      "item": [
+        {
+          "name": "12 - Create book using ISBN (Open Library author lookup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Part 2 integration test. The request intentionally omits authorId: the API should use the ISBN to fetch the author from Open Library and associate/create the author automatically. ISBN 9780451526538 is the known ISBN for Nineteen Eighty-Four.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nineteen Eighty-Four\",\n  \"isbn\": \"9780451526538\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);",
+                  "pm.test(\"Open Library author name is included in the book response\", function () {",
+                  "    pm.expect(d.authorName).to.be.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 - Get books by author (verify ISBN lookup association)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors/{{authorId}}/books"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Books-by-author response is an array containing the created book\", function () {",
+                  "    const rows = pm.response.json();",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    const bookId = Number(pm.collectionVariables.get(\"bookId\"));",
+                  "    pm.expect(rows.some(book => book.id === bookId)).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14 - Get all books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15 - Get book by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/{{bookId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16 - Search books by title",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/search/title?title=Nineteen"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17 - Search books by category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/search/category?category=FICTION"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "18 - Search books by author ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/search/author/{{authorId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "19 - Update book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "If your update DTO expects authorId, this request supplies the authorId captured from the create response.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nineteen Eighty-Four - Updated\",\n  \"isbn\": \"9780451526538\",\n  \"category\": \"FICTION\",\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Book was updated\", function () { pm.expect(pm.response.json().title).to.include(\"Updated\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "20 - Validation - reject duplicate ISBN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Tests ISBN uniqueness. The service/database must enforce uniqueness; DTO @NotBlank alone does not enforce it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Duplicate ISBN Test\",\n  \"isbn\": \"9780451526538\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Duplicate ISBN is rejected\", function () { pm.expect([400, 409, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "21 - Validation - reject missing book fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"isbn\": \"\",\n  \"category\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing required book fields are rejected\", function () { pm.expect([400, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "22 - Validation - reject invalid category enum",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Jackson should reject a category value that is not one of the BookCategory enum constants.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Invalid Category Test\",\n  \"isbn\": \"9780000000002\",\n  \"category\": \"INVALID_CATEGORY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid category is rejected\", function () { pm.expect([400, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Additional books for borrowing-limit test",
+      "item": [
+        {
+          "name": "22 - Create limit-test book 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Creates a distinct book so the borrower active-transaction limit can be tested. Open Library author lookup is expected to run for this ISBN too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Animal Farm\",\n  \"isbn\": \"9780451526342\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId2\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "23 - Create limit-test book 3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Creates a distinct book so the borrower active-transaction limit can be tested. Open Library author lookup is expected to run for this ISBN too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"The Hobbit\",\n  \"isbn\": \"9780547928227\",\n  \"category\": \"FANTASY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId3\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "24 - Create limit-test book 4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Creates a distinct book so the borrower active-transaction limit can be tested. Open Library author lookup is expected to run for this ISBN too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Pride and Prejudice\",\n  \"isbn\": \"9780141439518\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId4\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "25 - Create limit-test book 5",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Creates a distinct book so the borrower active-transaction limit can be tested. Open Library author lookup is expected to run for this ISBN too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"The Great Gatsby\",\n  \"isbn\": \"9780743273565\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId5\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "26 - Create limit-test book 6",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books",
+            "description": "Creates a distinct book so the borrower active-transaction limit can be tested. Open Library author lookup is expected to run for this ISBN too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"To Kill a Mockingbird\",\n  \"isbn\": \"9780061120084\",\n  \"category\": \"FICTION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Created book response contains an ID\", function () {",
+                  "    pm.expect(d.id).to.exist;",
+                  "});",
+                  "pm.collectionVariables.set(\"bookId6\", d.id);",
+                  "let ids = pm.collectionVariables.get(\"bookIds\");",
+                  "ids = ids ? JSON.parse(ids) : [];",
+                  "ids.push(d.id);",
+                  "pm.collectionVariables.set(\"bookIds\", JSON.stringify(ids));",
+                  "if (d.authorId) pm.collectionVariables.set(\"authorId\", d.authorId);",
+                  "if (d.author && d.author.id) pm.collectionVariables.set(\"authorId\", d.author.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Borrowing transactions and five-book limit",
+      "item": [
+        {
+          "name": "27 - Borrow book 1 (active loan 1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "28 - Borrow book 2 (active loan 2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId2}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId2\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "29 - Borrow book 3 (active loan 3)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId3}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId3\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "30 - Borrow book 4 (active loan 4)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId4}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId4\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "31 - Borrow book 5 (active loan 5)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId5}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId5\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "32 - Get all borrowing transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "33 - Get borrowing transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/{{transactionId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "34 - Borrow book 6 - should exceed limit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId6}}",
+            "description": "Expected to fail because the borrower already has five active BORROWED transactions. Requires borrower.transaction.limit=5 and counting only BORROWED transactions.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sixth active borrowing is rejected at configured limit 5\", function () { pm.expect([400, 409, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "35 - Return first borrowed book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/{{transactionId}}/return"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Transaction status is RETURNED\", function () { pm.expect(pm.response.json().status).to.eql(\"RETURNED\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "36 - Borrow book 6 after returning one - should succeed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId6}}",
+            "description": "After returning one book, the borrower should have four active loans and be allowed to borrow another.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerId\": \"{{borrowerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set(\"transactionId6\", data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "37 - Validation - reject borrowing without borrowerId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowings/books/{{bookId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing borrowerId is rejected\", function () { pm.expect([400, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Optional cleanup",
+      "item": [
+        {
+          "name": "38 - Delete borrower (cleanup)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/borrowers/{{borrowerId}}",
+            "description": "Optional cleanup. A borrower with borrowing history may be protected by foreign-key constraints; keep transaction history if deletion is rejected."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Borrower delete returns 204 or conflict if transactions are retained\", function () { pm.expect([204, 400, 409]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "39 - Delete author (cleanup)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/authors/{{authorId}}",
+            "description": "Optional cleanup. An author linked to books may be protected by foreign-key constraints."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Author delete returns 204 or conflict if books reference it\", function () { pm.expect([204, 400, 409]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "40 - Delete book (cleanup)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "Optional cleanup. A book with transaction history may be protected by foreign-key constraints."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Book delete returns 204 or conflict if borrowing history references it\", function () { pm.expect([204, 400, 409]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
