@@ -1,6 +1,49 @@
 # Library Management System
 
-A Spring Boot REST API for managing books, authors, borrowers, and borrowing transactions.
+A Spring Boot REST API for managing books, authors, borrowers, and borrowing transactions. This project was developed in two stages as part of the Java Developer Code Challenge.
+
+## Project Overview
+
+The application provides REST APIs for library operations, using Spring Boot, Java, PostgreSQL, and Spring Data JPA. It includes CRUD functionality, DTO-based data exchange, validation, logging, and borrowing/returning operations.
+
+## Project Milestones
+
+### Part 1 – Library Management System
+
+The original implementation includes:
+
+- CRUD operations for books, authors, and borrowers.
+- Borrowing and returning books.
+- Book search by title, category, and author.
+- DTOs for request and response data.
+- Entity relationships using Spring Data JPA.
+- Request validation.
+- Logging and centralized exception handling.
+- PostgreSQL persistence.
+
+### Part 2 – Project Extension
+
+Part 2 extends the original project with:
+
+- Open Library API integration to retrieve author information by ISBN when creating a book.
+- DTO-level validation for book and borrower requests.
+- ISBN uniqueness checks and database constraints.
+- Configurable maximum active borrowings per borrower.
+- Additional Postman tests for the extension requirements.
+
+## Technologies
+
+- Java 21
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- PostgreSQL
+- Gradle
+- Lombok
+- Jakarta Bean Validation
+- SLF4J Logging
+- Open Library API
+- Postman
 
 ## Requirements
 
@@ -9,50 +52,64 @@ A Spring Boot REST API for managing books, authors, borrowers, and borrowing tra
 - IntelliJ IDEA (recommended)
 - Postman (for API testing)
 
-## Database setup
+## Database Setup
 
-Create a PostgreSQL database named:
+Create a PostgreSQL database:
 
 ```sql
 CREATE DATABASE library_management_system;
 ```
 
-The current `src/main/resources/application.properties` expects:
+Configure your local database connection in `src/main/resources/application.properties`.
+
+Example:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/library_management_system
 spring.datasource.username=postgres
 spring.datasource.password=postgres
+
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
 server.port=8080
+borrower.transaction.limit=5
 ```
 
-Change the username and password to match your local PostgreSQL configuration. Do not commit real database credentials.
+Change the database username and password to match your local PostgreSQL configuration. Do not commit personal or production credentials.
 
-## Run the application
+## Running the Application
 
 1. Start PostgreSQL.
-2. Open the project root in IntelliJ IDEA.
-3. Make sure the Gradle project is loaded.
-4. Check the database connection settings in `application.properties`.
+2. Create the `library_management_system` database.
+3. Open the project in IntelliJ IDEA.
+4. Check the database configuration in `application.properties`.
 5. Run `LibraryManagementSystemApplication`.
-6. The API listens at `http://localhost:8080`.
 
-Alternatively, on Windows PowerShell, run:
+The API is available at:
+
+`http://localhost:8080`
+
+Alternatively, run the application from Windows PowerShell:
 
 ```powershell
 .\gradlew.bat bootRun
 ```
 
-Run tests with:
+## Running Tests
+
+Run the Gradle tests:
 
 ```powershell
 .\gradlew.bat test
 ```
 
-## API endpoints
+## API Endpoints
 
-All endpoints use the base URL `http://localhost:8080`.
+Base URL:
+
+`http://localhost:8080`
 
 ### Authors
 
@@ -65,15 +122,6 @@ All endpoints use the base URL `http://localhost:8080`.
 | DELETE | `/api/authors/{id}` | Delete an author |
 | GET | `/api/authors/{id}/books` | Get books written by an author |
 
-Example create request:
-
-```json
-{
-  "name": "Mary Shelley",
-  "biography": "English novelist."
-}
-```
-
 ### Books
 
 | Method | Endpoint | Description |
@@ -84,21 +132,26 @@ Example create request:
 | PUT | `/api/books/{id}` | Update a book |
 | DELETE | `/api/books/{id}` | Delete a book |
 | GET | `/api/books/search/title?title={title}` | Search books by title |
-| GET | `/api/books/search/category?category={category}` | Filter books by category |
-| GET | `/api/books/search/author/{authorId}` | Get books by author ID |
+| GET | `/api/books/search/category?category={category}` | Search books by category |
+| GET | `/api/books/search/author/{authorId}` | Get books by author |
 
-Example create request (create the author first):
+### Create a Book – Part 2
+
+When creating a book in Part 2, the client provides the title, ISBN, and category. The application uses the ISBN to retrieve author information from Open Library.
+
+Example request:
 
 ```json
 {
-  "title": "Frankenstein",
-  "isbn": "9780486282114",
-  "category": "FICTION",
-  "authorId": 1
+  "title": "Nineteen Eighty-Four",
+  "isbn": "9780451526538",
+  "category": "FICTION"
 }
 ```
 
-Supported categories:
+The author is retrieved from Open Library rather than supplied as an `authorId` in the creation request.
+
+Supported book categories:
 
 `FICTION`, `NON_FICTION`, `SCIENCE`, `HISTORY`, `TECHNOLOGY`, `BIOGRAPHY`, `FANTASY`, `MYSTERY`.
 
@@ -112,7 +165,7 @@ Supported categories:
 | PUT | `/api/borrowers/{id}` | Update a borrower |
 | DELETE | `/api/borrowers/{id}` | Delete a borrower |
 
-Example create request:
+Example request:
 
 ```json
 {
@@ -122,7 +175,7 @@ Example create request:
 }
 ```
 
-### Borrowing transactions
+### Borrowing Transactions
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -139,31 +192,107 @@ Example borrow request:
 }
 ```
 
-A successful borrowing changes the book's availability to `false` and creates a transaction with status `BORROWED`. Returning the transaction changes its status to `RETURNED`, records the return date, and makes the book available again.
+When a book is borrowed, its availability is updated and a borrowing transaction is created with the `BORROWED` status.
 
-## Postman testing
+When it is returned, the transaction status becomes `RETURNED`, the return date is recorded, and the book becomes available again.
 
-Import `Library_Management_System_Requirement_Tests.postman_collection.json` into Postman.
+## Part 2 Implementation Details
 
-Set `baseUrl` to `http://localhost:8080`, then run the folders in order:
+### 1. Open Library Integration
 
-1. Authors
-2. Books
-3. Borrowers
-4. Borrowing Transactions
-5. Delete Operations
+The application integrates with the Open Library Books API:
 
-The collection stores created IDs in collection variables. Some negative tests are intended to reveal incorrect error status codes until exception handling is corrected. Use a clean database or change the sample ISBNs and email addresses before repeating the collection.
+- Base URL: `https://openlibrary.org`
+- Endpoint: `/api/books`
+- ISBN lookup using the `bibkeys` parameter
+- Response format: JSON
+- Data command: `jscmd=data`
 
-## Project structure
+The application retrieves the author's name based on the ISBN provided during book creation. It checks whether the author already exists in the database and reuses the existing author; otherwise, it creates a new author record.
 
-The source code is organized by feature (`author`, `book`, `borrower`, and `borrowing`). Each feature contains its entity, controller, service, repository, and DTOs where applicable. Shared exception classes and the global exception handler are in the `exception` package.
+If the API does not provide the required author information, the application handles the failure through its business exception mechanism instead of creating an incomplete book record.
 
-## Implementation notes
+### 2. DTO Validation and Data Integrity
 
-- Book categories are represented by the `BookCategory` enum.
-- Spring Data JPA repositories provide persistence and derived query methods.
-- Request and response DTOs are used for API data exchange.
-- Jakarta Bean Validation annotations validate request data.
-- SLF4J logging is used in service operations.
-- PostgreSQL is used as the database.
+Validation is applied to incoming request DTOs.
+
+**Book requests:**
+- Title is required.
+- ISBN is required.
+- Category is required and must be a valid enum value.
+- ISBN uniqueness is checked by the service and enforced by the database constraint.
+
+**Borrower requests:**
+- Name is required.
+- Email is required and must have a valid email format.
+- Phone number is required.
+
+Validation errors are handled through the application's exception-handling mechanism.
+
+### 3. Borrowing Transaction Limit
+
+The maximum number of active borrowings per borrower is configurable in `application.properties`:
+
+```properties
+borrower.transaction.limit=5
+```
+
+Before processing a borrowing request, the application counts the borrower's active transactions and compares the count with the configured limit.
+
+If the borrower has reached the limit, the borrowing request is rejected. Returned transactions are not counted as active borrowings.
+
+## Postman Testing
+
+The project contains Postman collections for testing the API and the challenge requirements.
+
+### Part 1
+
+Import the original Part 1 requirement-based collection:
+
+`Library_Management_System_Requirement_Tests.postman_collection.json`
+
+### Part 2
+
+Import the Part 2 collection:
+
+`Library_Management_System_Part2.json`
+
+The Part 2 collection includes tests for CRUD operations, Open Library ISBN-based author retrieval, request validation, borrowing and returning books, and the maximum active borrowing limit.
+
+Set the `baseUrl` collection variable to:
+
+`http://localhost:8080`
+
+Run the requests in their intended order. Some tests use collection variables to store IDs returned by earlier requests. Use a clean database or update the test data when repeating the collection.
+
+## Project Structure
+
+The application is organized by feature:
+
+- `author` – author entity, repository, service, controller, and DTOs.
+- `book` – book entity, repository, service, controller, and DTOs.
+- `borrower` – borrower entity, repository, service, controller, and DTOs.
+- `borrowing` – borrowing transaction logic and related components.
+- `integration` – external API integration and Open Library DTOs.
+- `exception` – custom exceptions and centralized exception handling.
+
+## Implementation Notes
+
+- Book categories are represented using the `BookCategory` enum.
+- Spring Data JPA repositories use derived query methods for database operations.
+- DTOs separate API request/response data from database entities.
+- Jakarta Bean Validation validates incoming request data.
+- SLF4J is used for application logging.
+- PostgreSQL stores application data.
+- Open Library is used to retrieve author information during book creation in Part 2.
+- The borrowing limit is controlled through application configuration.
+
+## Repository History
+
+The project is maintained in one repository to preserve its development history.
+
+- `v1.0-part-1` – Original Library Management System.
+- `feature/part-2-open-library` – Part 2 extension development branch.
+- `v1.1-part-2` – Intended tag for the completed Part 2 extension after merging.
+
+The final `main` branch contains the combined Library Management System from Part 1 and Part 2.

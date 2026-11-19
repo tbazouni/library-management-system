@@ -1,6 +1,7 @@
 
 package com.example.library_management_system.book;
 
+import com.example.library_management_system.book.dto.BookCreateRequestDto;
 import com.example.library_management_system.book.dto.BookRequestDto;
 import com.example.library_management_system.book.dto.BookResponseDto;
 
@@ -22,7 +23,7 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponseDto createBook(
-            @Valid @RequestBody BookRequestDto request) {
+            @Valid @RequestBody BookCreateRequestDto request) {
 
         return bookService.createBook(request);
     }
