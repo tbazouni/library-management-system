@@ -1,0 +1,212 @@
+{
+  "info": {
+    "name": "Part 3 - Email Notification Service",
+    "description": "Tests MS2 validation and email delivery, then exercises MS1's borrow-to-notification flow. Import this collection into Postman. Set testEmail to an inbox you control and configure a valid ISBN before creating the book.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "ms1BaseUrl", "value": "http://localhost:8080" },
+    { "key": "ms2BaseUrl", "value": "http://localhost:8081" },
+    { "key": "testEmail", "value": "your-test-email@example.com" },
+    { "key": "testIsbn", "value": "9780451526538" },
+    { "key": "testBookTitle", "value": "Part 3 Notification Test Book" },
+    { "key": "borrowerId", "value": "" },
+    { "key": "bookId", "value": "" },
+    { "key": "transactionId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - MS2 - Send test email",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"message\": \"Book Clean Code borrowed successfully\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms2BaseUrl}}/send-email",
+        "description": "Send a direct MS2 request. Expect HTTP 200 and check testEmail's inbox."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('MS2 accepted the email', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "02 - MS2 - Reject invalid recipient",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"not-an-email\",\n  \"message\": \"Validation check\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms2BaseUrl}}/send-email",
+        "description": "Validation case. Expect HTTP 400; no email should be sent."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Invalid recipient is rejected', function () { pm.response.to.have.status(400); });"
+        ] }
+      }]
+    },
+    {
+      "name": "03 - MS2 - Reject empty message",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"message\": \" \"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms2BaseUrl}}/send-email",
+        "description": "Validation case. Expect HTTP 400; no email should be sent."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Blank message is rejected', function () { pm.response.to.have.status(400); });"
+        ] }
+      }]
+    },
+    {
+      "name": "04 - MS2 - SMTP unavailable (manual setup)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"message\": \"SMTP failure check\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms2BaseUrl}}/send-email",
+        "description": "Manual failure case: restart MS2 with SMTP_HOST pointing to a closed address/port, then send this request. Expect HTTP 503. Restore valid SMTP settings afterward."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('SMTP outage is reported as unavailable', function () { pm.response.to.have.status(503); });"
+        ] }
+      }]
+    },
+    {
+      "name": "05 - MS1 - Create borrower",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Part 3 Notification Test Borrower\",\n  \"email\": \"{{testEmail}}\",\n  \"phoneNumber\": \"+96170000000\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms1BaseUrl}}/api/borrowers",
+        "description": "Run after starting MS1. Use a new testEmail for each run because borrower emails are unique. Saves borrowerId for the borrow request."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Borrower created', function () { pm.response.to.have.status(201); });",
+          "if (pm.response.code === 201) pm.collectionVariables.set('borrowerId', pm.response.json().id);"
+        ] }
+      }]
+    },
+    {
+      "name": "06 - MS1 - Create book",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{testBookTitle}}\",\n  \"isbn\": \"{{testIsbn}}\",\n  \"category\": \"FICTION\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms1BaseUrl}}/api/books",
+        "description": "MS1 looks up the author by ISBN through Open Library. Change testIsbn if it already exists in your database. Saves bookId."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Book created', function () { pm.response.to.have.status(201); });",
+          "if (pm.response.code === 201) pm.collectionVariables.set('bookId', pm.response.json().id);"
+        ] }
+      }]
+    },
+    {
+      "name": "07 - MS1 - Borrow and notify",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerId\": {{borrowerId}}\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms1BaseUrl}}/api/borrowings/books/{{bookId}}",
+        "description": "End-to-end MS1 flow. Expect HTTP 201; inspect both service logs and the test inbox for 'Book {{testBookTitle}} borrowed successfully'."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Borrow succeeds even if notification delivery is unavailable', function () { pm.response.to.have.status(201); });",
+          "if (pm.response.code === 201) pm.collectionVariables.set('transactionId', pm.response.json().id);"
+        ] }
+      }]
+    },
+    {
+      "name": "08 - MS1 - Verify transaction",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{ms1BaseUrl}}/api/borrowings/{{transactionId}}",
+        "description": "Verify the borrowing transaction was committed."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Borrow transaction is persisted', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "09 - MS1 - Return book before outage check",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": "{{ms1BaseUrl}}/api/borrowings/{{transactionId}}/return",
+        "description": "Run this before the next request to make the test book available again."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Book returned', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "10 - MS1 - Borrow while MS2 is stopped (manual)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerId\": {{borrowerId}}\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{ms1BaseUrl}}/api/borrowings/books/{{bookId}}",
+        "description": "After the return request, stop MS2 and send this request to MS1. The borrow should still return HTTP 201 and MS1 logs should record the undelivered notification. Restart MS2 afterward."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Borrow remains committed while MS2 is unavailable', function () { pm.response.to.have.status(201); });"
+        ] }
+      }]
+    }
+  ]
+}

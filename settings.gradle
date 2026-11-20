@@ -1,4 +1,15 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
+
 rootProject.name = 'library-management-system'
+
+include 'ms1-library-management-system'
+include 'ms2-email-notification-service'

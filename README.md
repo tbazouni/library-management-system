@@ -1,298 +1,95 @@
-# Library Management System
+# Library Management System - Part 3
 
-A Spring Boot REST API for managing books, authors, borrowers, and borrowing transactions. This project was developed in two stages as part of the Java Developer Code Challenge.
+This Gradle multi-project repository contains two independently runnable Spring Boot services:
 
-## Project Overview
+- **MS1 - Library Management System**: REST API and PostgreSQL persistence. A successful borrow calls MS2 using Spring Cloud OpenFeign after the database transaction commits.
+- **MS2 - Email Notification Service**: validates `POST /send-email` requests and sends messages through Spring Email.
 
-The application provides REST APIs for library operations, using Spring Boot, Java, PostgreSQL, and Spring Data JPA. It includes CRUD functionality, DTO-based data exchange, validation, logging, and borrowing/returning operations.
+## Project layout
 
-## Project Milestones
+```text
+.
+|-- ms1-library-management-system/       # Library API, tests, and MS1 Postman collections
+|-- ms2-email-notification-service/       # Email API, tests, and Part 3 Postman collection
+|-- gradle/                               # Shared Gradle wrapper
+|-- build.gradle                          # Root build, test, and clean tasks
+|-- settings.gradle                       # MS1/MS2 multi-project setup
+```
 
-### Part 1 – Library Management System
+Open the repository root (`library-management-system-part3`) in IntelliJ so it imports both services. Do not open only an individual service folder.
 
-The original implementation includes:
+## Run Part 3 locally
 
-- CRUD operations for books, authors, and borrowers.
-- Borrowing and returning books.
-- Book search by title, category, and author.
-- DTOs for request and response data.
-- Entity relationships using Spring Data JPA.
-- Request validation.
-- Logging and centralized exception handling.
-- PostgreSQL persistence.
+### 1. Start PostgreSQL
 
-### Part 2 – Project Extension
-
-Part 2 extends the original project with:
-
-- Open Library API integration to retrieve author information by ISBN when creating a book.
-- DTO-level validation for book and borrower requests.
-- ISBN uniqueness checks and database constraints.
-- Configurable maximum active borrowings per borrower.
-- Additional Postman tests for the extension requirements.
-
-## Technologies
-
-- Java 21
-- Spring Boot
-- Spring Web
-- Spring Data JPA
-- PostgreSQL
-- Gradle
-- Lombok
-- Jakarta Bean Validation
-- SLF4J Logging
-- Open Library API
-- Postman
-
-## Requirements
-
-- Java 21
-- PostgreSQL
-- IntelliJ IDEA (recommended)
-- Postman (for API testing)
-
-## Database Setup
-
-Create a PostgreSQL database:
+Create the database if it does not already exist:
 
 ```sql
 CREATE DATABASE library_management_system;
 ```
 
-Configure your local database connection in `src/main/resources/application.properties`.
-
-Example:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/library_management_system
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-server.port=8080
-borrower.transaction.limit=5
-```
-
-Change the database username and password to match your local PostgreSQL configuration. Do not commit personal or production credentials.
-
-## Running the Application
-
-1. Start PostgreSQL.
-2. Create the `library_management_system` database.
-3. Open the project in IntelliJ IDEA.
-4. Check the database configuration in `application.properties`.
-5. Run `LibraryManagementSystemApplication`.
-
-The API is available at:
-
-`http://localhost:8080`
-
-Alternatively, run the application from Windows PowerShell:
+Configure MS1's connection in the PowerShell session used to start the service. The application reads these environment variables and keeps credentials out of source control:
 
 ```powershell
-.\gradlew.bat bootRun
+$env:DB_URL = "jdbc:postgresql://localhost:5432/library_management_system"
+$env:DB_USERNAME = "postgres"
+$env:DB_PASSWORD = "your-local-password"
 ```
 
-## Running Tests
+### 2. Start MS2 first
 
-Run the Gradle tests:
+Set the SMTP values for a test inbox or SMTP sandbox, then start MS2:
+
+```powershell
+$env:SMTP_HOST = "your-smtp-host"
+$env:SMTP_PORT = "587"
+$env:SMTP_USERNAME = "your-smtp-username"
+$env:SMTP_PASSWORD = "your-smtp-password"
+$env:SMTP_AUTH = "true"
+$env:SMTP_STARTTLS_ENABLED = "true"
+$env:SMTP_STARTTLS_REQUIRED = "true"
+$env:MAIL_FROM = "library@example.com"
+.\gradlew.bat :ms2-email-notification-service:bootRun
+```
+
+MS2 listens on port `8081`. Use the same PowerShell session for its SMTP variables. IntelliJ users can run `EmailNotificationServiceApplication.java` with the same environment variables in the run configuration.
+
+### 3. Start MS1
+
+In another terminal, set the database variables above and start MS1:
+
+```powershell
+.\gradlew.bat :ms1-library-management-system:bootRun
+```
+
+MS1 listens on port `8080` and calls `http://localhost:8081` by default. Set `EMAIL_SERVICE_URL` if MS2 uses another address. IntelliJ users can run `LibraryManagementSystemApplication.java` with `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` configured.
+
+### 4. Import and run the Part 3 Postman collection
+
+Import [Part3-Email-Notification.postman_collection.json](ms2-email-notification-service/postman/Part3-Email-Notification.postman_collection.json) into Postman. Set the collection variable `testEmail` to an inbox you control. The default `testIsbn` is an Open Library ISBN; change it if that ISBN already exists in your database.
+
+Run requests `01` through `03` to test MS2 delivery and validation. Then run `05` through `09` in order to create a borrower and book, borrow it through MS1, verify the transaction, and return the book. Confirm the successful borrow message in the MS2 logs and your SMTP test inbox:
+
+```text
+Book <your book title> borrowed successfully
+```
+
+Request `04` is for the SMTP outage case: restart MS2 with SMTP pointed at an unavailable host/port, then send it; MS2 should return `503`. For the MS1 outage case, run request `10` only after request `09`, with MS2 stopped. The borrow should still return `201`; MS1 logs the delivery failure because the borrowing transaction has already committed. Restart MS2 afterward.
+
+MS1 currently logs failed notifications but does not persist or retry them. An outbox/retry worker would be needed for guaranteed redelivery.
+
+## Integration tests
+
+Run both services' tests from the repository root:
 
 ```powershell
 .\gradlew.bat test
 ```
 
-## API Endpoints
+The MS1 integration test starts the real MS1 HTTP application, performs a borrow, and verifies that Feign sends the notification body over HTTP. MS2 integration tests send HTTP requests to a running embedded MS2 instance and verify delivery into a local SMTP test inbox, validation errors, and the `503` response when SMTP is unavailable. These tests use a local test inbox; they do not verify delivery through your external mail provider.
 
-Base URL:
+Run one service's tests with `.\gradlew.bat :ms1-library-management-system:test` or `.\gradlew.bat :ms2-email-notification-service:test`.
 
-`http://localhost:8080`
+## Clean generated files
 
-### Authors
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/authors` | Create an author |
-| GET | `/api/authors` | Get all authors |
-| GET | `/api/authors/{id}` | Get an author by ID |
-| PUT | `/api/authors/{id}` | Update an author |
-| DELETE | `/api/authors/{id}` | Delete an author |
-| GET | `/api/authors/{id}/books` | Get books written by an author |
-
-### Books
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/books` | Create a book |
-| GET | `/api/books` | Get all books |
-| GET | `/api/books/{id}` | Get a book by ID |
-| PUT | `/api/books/{id}` | Update a book |
-| DELETE | `/api/books/{id}` | Delete a book |
-| GET | `/api/books/search/title?title={title}` | Search books by title |
-| GET | `/api/books/search/category?category={category}` | Search books by category |
-| GET | `/api/books/search/author/{authorId}` | Get books by author |
-
-### Create a Book – Part 2
-
-When creating a book in Part 2, the client provides the title, ISBN, and category. The application uses the ISBN to retrieve author information from Open Library.
-
-Example request:
-
-```json
-{
-  "title": "Nineteen Eighty-Four",
-  "isbn": "9780451526538",
-  "category": "FICTION"
-}
-```
-
-The author is retrieved from Open Library rather than supplied as an `authorId` in the creation request.
-
-Supported book categories:
-
-`FICTION`, `NON_FICTION`, `SCIENCE`, `HISTORY`, `TECHNOLOGY`, `BIOGRAPHY`, `FANTASY`, `MYSTERY`.
-
-### Borrowers
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/borrowers` | Create a borrower |
-| GET | `/api/borrowers` | Get all borrowers |
-| GET | `/api/borrowers/{id}` | Get a borrower by ID |
-| PUT | `/api/borrowers/{id}` | Update a borrower |
-| DELETE | `/api/borrowers/{id}` | Delete a borrower |
-
-Example request:
-
-```json
-{
-  "name": "Alex Morgan",
-  "email": "alex@example.com",
-  "phoneNumber": "+96170123456"
-}
-```
-
-### Borrowing Transactions
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/borrowings/books/{bookId}` | Borrow a book |
-| GET | `/api/borrowings` | Get all borrowing transactions |
-| GET | `/api/borrowings/{id}` | Get a transaction by ID |
-| PUT | `/api/borrowings/{transactionId}/return` | Return a borrowed book |
-
-Example borrow request:
-
-```json
-{
-  "borrowerId": 1
-}
-```
-
-When a book is borrowed, its availability is updated and a borrowing transaction is created with the `BORROWED` status.
-
-When it is returned, the transaction status becomes `RETURNED`, the return date is recorded, and the book becomes available again.
-
-## Part 2 Implementation Details
-
-### 1. Open Library Integration
-
-The application integrates with the Open Library Books API:
-
-- Base URL: `https://openlibrary.org`
-- Endpoint: `/api/books`
-- ISBN lookup using the `bibkeys` parameter
-- Response format: JSON
-- Data command: `jscmd=data`
-
-The application retrieves the author's name based on the ISBN provided during book creation. It checks whether the author already exists in the database and reuses the existing author; otherwise, it creates a new author record.
-
-If the API does not provide the required author information, the application handles the failure through its business exception mechanism instead of creating an incomplete book record.
-
-### 2. DTO Validation and Data Integrity
-
-Validation is applied to incoming request DTOs.
-
-**Book requests:**
-- Title is required.
-- ISBN is required.
-- Category is required and must be a valid enum value.
-- ISBN uniqueness is checked by the service and enforced by the database constraint.
-
-**Borrower requests:**
-- Name is required.
-- Email is required and must have a valid email format.
-- Phone number is required.
-
-Validation errors are handled through the application's exception-handling mechanism.
-
-### 3. Borrowing Transaction Limit
-
-The maximum number of active borrowings per borrower is configurable in `application.properties`:
-
-```properties
-borrower.transaction.limit=5
-```
-
-Before processing a borrowing request, the application counts the borrower's active transactions and compares the count with the configured limit.
-
-If the borrower has reached the limit, the borrowing request is rejected. Returned transactions are not counted as active borrowings.
-
-## Postman Testing
-
-The project contains Postman collections for testing the API and the challenge requirements.
-
-### Part 1
-
-Import the original Part 1 requirement-based collection:
-
-`Library_Management_System_Requirement_Tests.postman_collection.json`
-
-### Part 2
-
-Import the Part 2 collection:
-
-`Library_Management_System_Part2.json`
-
-The Part 2 collection includes tests for CRUD operations, Open Library ISBN-based author retrieval, request validation, borrowing and returning books, and the maximum active borrowing limit.
-
-Set the `baseUrl` collection variable to:
-
-`http://localhost:8080`
-
-Run the requests in their intended order. Some tests use collection variables to store IDs returned by earlier requests. Use a clean database or update the test data when repeating the collection.
-
-## Project Structure
-
-The application is organized by feature:
-
-- `author` – author entity, repository, service, controller, and DTOs.
-- `book` – book entity, repository, service, controller, and DTOs.
-- `borrower` – borrower entity, repository, service, controller, and DTOs.
-- `borrowing` – borrowing transaction logic and related components.
-- `integration` – external API integration and Open Library DTOs.
-- `exception` – custom exceptions and centralized exception handling.
-
-## Implementation Notes
-
-- Book categories are represented using the `BookCategory` enum.
-- Spring Data JPA repositories use derived query methods for database operations.
-- DTOs separate API request/response data from database entities.
-- Jakarta Bean Validation validates incoming request data.
-- SLF4J is used for application logging.
-- PostgreSQL stores application data.
-- Open Library is used to retrieve author information during book creation in Part 2.
-- The borrowing limit is controlled through application configuration.
-
-## Repository History
-
-The project is maintained in one repository to preserve its development history.
-
-- `v1.0-part-1` – Original Library Management System.
-- `feature/part-2-open-library` – Part 2 extension development branch.
-- `v1.1-part-2` – Intended tag for the completed Part 2 extension after merging.
-
-The final `main` branch contains the combined Library Management System from Part 1 and Part 2.
+Run `.\gradlew.bat clean` to remove build outputs from both services. Gradle caches and build directories are ignored by Git. To also remove local Gradle caches, close IntelliJ and delete the root and service `.gradle` directories; Gradle recreates them on the next build.
